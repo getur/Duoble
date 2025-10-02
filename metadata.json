@@ -1,0 +1,5 @@
+{
+  "name": "Duoble",
+  "description": "An interactive mobile application, similar to Duolingo, designed to help users learn the order of the books of the Bible and memorize verses through engaging quizzes.",
+  "requestFramePermissions": []
+}
