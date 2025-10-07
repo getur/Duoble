@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { parseVerseWithGemini } from '../services/geminiService';
 import type { ParsedVerse } from '../types';
 
 const VerseMemorizer: React.FC = () => {
@@ -28,7 +27,7 @@ const VerseMemorizer: React.FC = () => {
     setIsQuizChecked(false);
   }, []);
 
-  const handleCreateQuiz = async () => {
+  const handleCreateQuiz = () => {
     if (!userInput.trim()) {
       setError("Please enter a verse.");
       return;
@@ -38,7 +37,7 @@ const VerseMemorizer: React.FC = () => {
     setParsedVerse(null);
 
     try {
-      const result = await parseVerseWithGemini(userInput);
+      const result = parseVerseManually(userInput);
       setParsedVerse(result);
       createQuiz(result.text);
     } catch (e: any) {
@@ -46,6 +45,23 @@ const VerseMemorizer: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const parseVerseManually = (input: string): ParsedVerse => {
+    const trimmed = input.trim();
+    const pattern = /^([1-3]?\s*[A-Za-z]+)\s+(\d+):(\d+)\s+(.+)$/;
+    const match = trimmed.match(pattern);
+
+    if (!match) {
+      throw new Error("Please format as: Book Chapter:Verse Text (e.g., John 3:16 For God so loved...)");
+    }
+
+    return {
+      book: match[1].trim(),
+      chapter: parseInt(match[2]),
+      verse: parseInt(match[3]),
+      text: match[4].trim()
+    };
   };
 
   const handleAnswerChange = (index: number, value: string) => {
